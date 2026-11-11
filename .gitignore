@@ -1,0 +1,162 @@
+
+# ==========================================
+# Node.js / JavaScript / TypeScript
+# ==========================================
+
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+*.tsbuildinfo
+
+# Package manager caches
+.npm/
+.yarn/cache/
+.yarn/unplugged/
+.pnpm-store/
+
+# ==========================================
+# React Native / Metro
+# ==========================================
+
+.metro-health-check*
+.metro/
+.expo/
+.expo-shared/
+web-build/
+
+# ==========================================
+# Watchman
+# ==========================================
+
+.watchmanconfig.local
+
+# ==========================================
+# Environment variables
+# ==========================================
+
+.env
+.env.*
+!.env.example
+!.env.sample
+
+# ==========================================
+# macOS
+# ==========================================
+
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+.Spotlight-V100
+.Trashes
+.fseventsd
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+
+# ==========================================
+# Xcode / iOS
+# ==========================================
+
+ios/build/
+ios/Pods/
+ios/DerivedData/
+ios/*.xcworkspace/xcuserdata/
+ios/*.xcodeproj/xcuserdata/
+ios/*.xcuserstate
+ios/*.hmap
+ios/*.ipa
+ios/*.app/
+
+# Xcode user-specific files
+xcuserdata/
+*.xcuserstate
+*.xccheckout
+*.moved-aside
+*.hmap
+*.ipa
+*.app
+
+# Swift Package Manager
+.build/
+Packages/
+Package.resolved
+
+# CocoaPods
+Pods/
+*.xcworkspace/contents.xcworkspacedata
+
+# ==========================================
+# Android / Android Studio
+# ==========================================
+
+android/.gradle/
+android/build/
+android/app/build/
+android/app/release/
+android/local.properties
+android/.idea/
+android/captures/
+
+# Android Studio
+.idea/
+*.iml
+*.hprof
+.gradle/
+local.properties
+
+# Keystores and signing credentials
+*.jks
+*.keystore
+
+# ==========================================
+# IDEs / Editors
+# ==========================================
+
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+
+.idea/
+*.sublime-workspace
+*.sublime-project
+
+# ==========================================
+# Logs / Temporary files
+# ==========================================
+
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+tmp/
+temp/
+
+# ==========================================
+# Testing / Coverage
+# ==========================================
+
+coverage/
+.nyc_output/
+
+# ==========================================
+# Build outputs
+# ==========================================
+
+dist/
+build/
+out/
+
+# ==========================================
+# TypeScript
+# ==========================================
+
+*.tsbuildinfo
+
+# ==========================================
+# Debugging
+# ==========================================
+
+*.stackdump
