@@ -1,20 +1,58 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import React from 'react';
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { AuthProvider, useAuth } from './src/contexts/AuthContext';
+import { RootStackParamList } from './src/navigation/types';
 
-export default function App() {
+import LoginScreen from './src/screens/LoginScreen';
+import OperationsScreen from './src/screens/OperationsScreen';
+import OperationDetailScreen from './src/screens/OperationDetailScreen';
+import ProfileScreen from './src/screens/ProfileScreen';
+
+const Stack = createNativeStackNavigator<RootStackParamList>();
+
+function Routes() {
+  const { user } = useAuth();
+
   return (
-    <View style={styles.container}>
-      <Text>Open up App.tsx to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
+    <NavigationContainer>
+      <Stack.Navigator>
+        {user ? (
+          // Telas disponíveis apenas com o usuário logado
+          <>
+            <Stack.Screen
+              name="Operations"
+              component={OperationsScreen}
+              options={{ title: 'Operações' }}
+            />
+            <Stack.Screen
+              name="OperationDetail"
+              component={OperationDetailScreen}
+              options={{ title: 'Operação' }}
+            />
+            <Stack.Screen
+              name="Profile"
+              component={ProfileScreen}
+              options={{ title: 'Perfil' }}
+            />
+          </>
+        ) : (
+          // Tela exibida quando não está logado (primeira ao abrir o app)
+          <Stack.Screen
+            name="Login"
+            component={LoginScreen}
+            options={{ headerShown: false }}
+          />
+        )}
+      </Stack.Navigator>
+    </NavigationContainer>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
+export default function App() {
+  return (
+    <AuthProvider>
+      <Routes />
+    </AuthProvider>
+  );
+}
