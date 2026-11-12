@@ -9,10 +9,20 @@ import OperationsScreen from './src/screens/OperationsScreen';
 import OperationDetailScreen from './src/screens/OperationDetailScreen';
 import ProfileScreen from './src/screens/ProfileScreen';
 
+import { ActivityIndicator, View } from 'react-native';
+
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 function Routes() {
-  const { user } = useAuth();
+  const { user, loading } = useAuth();
+
+  if (loading) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <ActivityIndicator size="large" />
+      </View>
+    );
+  }
 
   return (
     <NavigationContainer>
