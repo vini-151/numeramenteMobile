@@ -7,74 +7,76 @@ import {
   ScrollView,
   KeyboardAvoidingView,
   Platform,
+  Image,
+  useWindowDimensions,
   StyleSheet,
 } from 'react-native';
-import Svg, { Circle, Ellipse, G, Line, Path } from 'react-native-svg';
 import { useAuth } from '../contexts/AuthContext';
 
-/* ---------- Ilustração (gato + estrelas) ---------- */
+/* ---------- Cores ---------- */
 const INK = '#0f1b2d';
 const BLUE = '#3d5afe';
 const BG = '#e6f2ff';
-const ORANGE = '#f5882a';
 
-function Star({ x, y, size, rotate = 0 }: { x: number; y: number; size: number; rotate?: number }) {
-  return (
-    <G transform={`translate(${x} ${y}) rotate(${rotate}) scale(${size / 100})`}>
-      <Path
-        d="M0,-50 L12,-18 L46,-24 L24,2 L40,34 L8,22 L-14,48 L-18,14 L-50,0 L-20,-14 Z"
-        fill={ORANGE}
-        stroke={INK}
-        strokeWidth={5}
-        strokeLinejoin="round"
-      />
-    </G>
-  );
-}
+/* ---------- Imagens da designer (ajuste o caminho se necessário) ---------- */
+const IMG = {
+  gato: require('../../assets/images/gato.png'), // 530x718
+  brilhoPequeno: require('../../assets/images/estrela-brilho-pequena.png'), // 66x80
+  estrelaTorta: require('../../assets/images/estrela-torta.png'), // 158x190
+  estrelaCincoPontas: require('../../assets/images/estrela-cinco-pontas.png'), // 160x180
+  brilhoMais: require('../../assets/images/estrela-brilho-mais.png'), // 132x158
+};
 
+/* ---------- Ilustração (posições relativas à largura da tela) ---------- */
 function Ilustracao() {
+  const { width: W } = useWindowDimensions();
+  const altura = W * 0.912;
+
+  // helper: posiciona uma imagem por fração da largura (W)
+  const pos = (left: number, top: number, largura: number, w: number, h: number) => ({
+    position: 'absolute' as const,
+    left: left * W,
+    top: top * W,
+    width: largura * W,
+    height: largura * W * (h / w),
+  });
+
   return (
-    <Svg width="100%" style={{ aspectRatio: 360 / 260 }} viewBox="0 0 360 260">
-      <Circle cx={180} cy={270} r={250} fill={BLUE} />
-      <Circle cx={180} cy={270} r={150} fill={BG} />
+    <View style={[styles.art, { height: altura }]} pointerEvents="none">
+      {/* círculo azul grande */}
+      <View
+        style={{
+          position: 'absolute',
+          left: -0.3 * W,
+          top: 0.162 * W,
+          width: 1.6 * W,
+          height: 1.6 * W,
+          borderRadius: 0.8 * W,
+          backgroundColor: BLUE,
+        }}
+      />
+      {/* círculo claro interno */}
+      <View
+        style={{
+          position: 'absolute',
+          left: 0.15 * W,
+          top: 0.292 * W,
+          width: 0.7 * W,
+          height: 0.7 * W,
+          borderRadius: 0.35 * W,
+          backgroundColor: BG,
+        }}
+      />
 
-      <Star x={34} y={118} size={44} rotate={-12} />
-      <Star x={328} y={112} size={50} rotate={10} />
-      <Star x={308} y={218} size={30} rotate={-8} />
-      <Star x={60} y={240} size={26} rotate={14} />
+      {/* gato */}
+      <Image source={IMG.gato} style={pos(0.16, 0, 0.68, 530, 718)} resizeMode="contain" />
 
-      {/* corpo */}
-      <Path
-        d="M96 260 C100 200 120 168 150 156 L210 156 C240 168 260 200 264 260 Z"
-        fill="#17253d"
-      />
-      {/* cabeça */}
-      <Path
-        d="M112 112 L118 62 L146 88 C166 82 194 82 214 88 L242 62 L248 112 C252 150 224 176 180 176 C136 176 108 150 112 112 Z"
-        fill="#17253d"
-      />
-      {/* olhos */}
-      <Ellipse cx={150} cy={122} rx={13} ry={15} fill="#fff" />
-      <Ellipse cx={210} cy={122} rx={13} ry={15} fill="#fff" />
-      <Circle cx={152} cy={124} r={6.5} fill="#17253d" />
-      <Circle cx={208} cy={124} r={6.5} fill="#17253d" />
-      {/* nariz e boca */}
-      <Path d="M174 142 L186 142 L180 150 Z" fill={BG} />
-      <Path
-        d="M180 150 C180 158 170 160 166 156 M180 150 C180 158 190 160 194 156"
-        stroke={BG}
-        strokeWidth={2}
-        fill="none"
-        strokeLinecap="round"
-      />
-      {/* bigodes */}
-      <G stroke={BG} strokeWidth={2} strokeLinecap="round">
-        <Line x1={136} y1={146} x2={108} y2={142} />
-        <Line x1={136} y1={152} x2={108} y2={156} />
-        <Line x1={224} y1={146} x2={252} y2={142} />
-        <Line x1={224} y1={152} x2={252} y2={156} />
-      </G>
-    </Svg>
+      {/* estrelas */}
+      <Image source={IMG.brilhoPequeno} style={pos(0.077, 0.38, 0.075, 66, 80)} resizeMode="contain" />
+      <Image source={IMG.brilhoMais} style={pos(0.78, 0.317, 0.17, 132, 158)} resizeMode="contain" />
+      <Image source={IMG.estrelaTorta} style={pos(0.007, 0.634, 0.18, 158, 190)} resizeMode="contain" />
+      <Image source={IMG.estrelaCincoPontas} style={pos(0.806, 0.67, 0.15, 160, 180)} resizeMode="contain" />
+    </View>
   );
 }
 
@@ -90,9 +92,7 @@ export default function LoginScreen() {
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
     >
       {/* ilustração fixa no rodapé, atrás do conteúdo */}
-      <View style={styles.art} pointerEvents="none">
-        <Ilustracao />
-      </View>
+      <Ilustracao />
 
       <ScrollView
         contentContainerStyle={styles.content}
@@ -157,7 +157,7 @@ const styles = StyleSheet.create({
   content: {
     paddingTop: 64,
     paddingHorizontal: 24,
-    paddingBottom: 200,
+    paddingBottom: 240,
   },
   title: {
     fontSize: 32,
@@ -221,5 +221,6 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
+    overflow: 'hidden',
   },
 });
