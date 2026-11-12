@@ -8,6 +8,7 @@ import {
   KeyboardAvoidingView,
   Platform,
   Image,
+  ActivityIndicator, 
   useWindowDimensions,
   StyleSheet,
 } from 'react-native';
@@ -85,6 +86,32 @@ export default function LoginScreen() {
   const { signIn } = useAuth();
   const [nome, setNome] = useState('');
   const [email, setEmail] = useState('');
+  const [erro, setErro] = useState('');
+  const [enviando, setEnviando] = useState(false);
+
+  async function handleEntrar() {
+    if (enviando) return;
+
+    if (!nome.trim() || !email.trim()) {
+      setErro('Preencha seu nome e seu email.');
+      return;
+    }
+
+    setErro('');
+    setEnviando(true);
+    try {
+      // sucesso: o AuthContext define o usuário e a navegação troca de tela sozinha
+      await signIn(nome.trim(), email.trim());
+    } catch (e: any) {
+      const detail = e?.response?.data?.detail;
+      setErro(
+        typeof detail === 'string'
+          ? detail
+          : 'Não foi possível conectar ao servidor. Tente novamente.'
+      );
+      setEnviando(false);
+    }
+  }
 
   return (
     <KeyboardAvoidingView
@@ -117,6 +144,7 @@ export default function LoginScreen() {
           value={nome}
           onChangeText={setNome}
           autoComplete="name"
+          editable={!enviando}
         />
 
         <Text style={styles.label}>Qual seu email?</Text>
@@ -129,19 +157,34 @@ export default function LoginScreen() {
           keyboardType="email-address"
           autoCapitalize="none"
           autoComplete="email"
+          editable={!enviando}
         />
+
+        {!!erro && (
+          <Text style={styles.error} accessibilityRole="alert">
+            {erro}
+          </Text>
+        )}
 
         <Pressable accessibilityRole="link" hitSlop={8}>
           <Text style={styles.terms}>Termos de privacidade e uso</Text>
         </Pressable>
 
-        {/* ajuste os argumentos conforme o seu signIn */}
         <Pressable
-          style={({ pressed }) => [styles.button, pressed && styles.buttonPressed]}
-          onPress={() => signIn(email, nome)}
+          style={({ pressed }) => [
+            styles.button,
+            (pressed || enviando) && styles.buttonPressed,
+          ]}
+          onPress={handleEntrar}
+          disabled={enviando}
           accessibilityRole="button"
+          accessibilityState={{ disabled: enviando }}
         >
-          <Text style={styles.buttonText}>Entrar</Text>
+          {enviando ? (
+            <ActivityIndicator color="#fff" />
+          ) : (
+            <Text style={styles.buttonText}>Entrar</Text>
+          )}
         </Pressable>
       </ScrollView>
     </KeyboardAvoidingView>
@@ -222,5 +265,12 @@ const styles = StyleSheet.create({
     right: 0,
     bottom: 0,
     overflow: 'hidden',
+  },
+    error: {
+    color: '#c62828',
+    fontSize: 14,
+    fontWeight: '600',
+    marginBottom: 8,
+    marginTop: -8,
   },
 });
