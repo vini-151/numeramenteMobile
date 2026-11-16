@@ -57,13 +57,72 @@ function OpMini({ op, largura }: { op: Op; largura?: number | `${number}%` }) {
   );
 }
 
+/* ---------- Balão ---------- */
+function Balao({
+  lado,
+  children,
+  largura,
+}: {
+  lado: 'bot' | 'usuario';
+  children: React.ReactNode;
+  largura?: number | `${number}%`;
+}) {
+  const bot = lado === 'bot';
+  return (
+    <View style={[styles.balaoSombra, { width: largura }]}>
+      <View style={styles.balao}>
+        {/* "rabinho" apontando para o avatar */}
+        <View style={[styles.rabo, bot ? styles.raboEsq : styles.raboDir]} />
+        {children}
+      </View>
+    </View>
+  );
+}
+
+/* ---------- Mensagens ---------- */
+function MsgBot({ children }: { children: React.ReactNode }) {
+  return (
+    <View style={styles.linhaBot}>
+      <Image source={GATO_AVATAR} style={styles.avatarGato} resizeMode="contain" />
+      <View style={{ flex: 1 }}>
+        <Balao lado="bot">{children}</Balao>
+      </View>
+    </View>
+  );
+}
+
+function MsgUsuario({ children }: { children: React.ReactNode }) {
+  return (
+    <View style={styles.linhaUsuario}>
+      <Balao lado="usuario">{children}</Balao>
+      <View style={styles.avatarUsuario}>
+        <MaterialCommunityIcons name="account" size={30} color="#9aa7d6" />
+      </View>
+    </View>
+  );
+}
+
 /* ---------- Tela ---------- */
 export default function TasksScreen() {
-
+  const insets = useSafeAreaInsets();
+  const { width: W } = useWindowDimensions();
 
   return (
-    <View >
+    <View style={styles.root}>
+      <ScrollView
+        contentContainerStyle={[styles.content, { paddingTop: insets.top + 24 }]}
+        showsVerticalScrollIndicator={false}
+      >
 
+
+        {/* 2. Usuário escolhe Adição */}
+        <MsgUsuario>
+          <OpMini op={OPS[0]} largura={W * 0.3} />
+        </MsgUsuario>
+
+    
+      
+      </ScrollView>
     </View>
   );
 }
@@ -105,4 +164,76 @@ const styles = StyleSheet.create({
     fontWeight: '800',
     color: '#fff',
   },
+
+  /* balão */
+  balaoSombra: {
+    backgroundColor: SOMBRA,
+    borderRadius: 24,
+    paddingRight: 6,
+    paddingBottom: 6,
+  },
+
+  balao: {
+    backgroundColor: '#fff',
+    borderWidth: 2,
+    borderColor: BORDA,
+    borderRadius: 24,
+    padding: 16,
+  },
+
+  rabo: {
+    position: 'absolute',
+    top: 18,
+    width: 16,
+    height: 16,
+    backgroundColor: '#fff',
+    transform: [{ rotate: '45deg' }],
+  },
+
+  raboEsq: {
+    left: -9,
+    borderLeftWidth: 2,
+    borderBottomWidth: 2,
+    borderColor: BORDA,
+  },
+
+  raboDir: {
+    right: -9,
+    borderRightWidth: 2,
+    borderTopWidth: 2,
+    borderColor: BORDA,
+  },
+
+  /* linhas */
+  linhaBot: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: 14,
+  },
+
+  linhaUsuario: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    justifyContent: 'flex-end',
+    gap: 14,
+  },
+
+  avatarGato: {
+    width: 64,
+    height: 64,
+  },
+
+  avatarUsuario: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    backgroundColor: '#e3e9fb',
+    borderWidth: 3,
+    borderColor: '#c3cbe8',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+
+
+  
 });
