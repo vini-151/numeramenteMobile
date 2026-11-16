@@ -139,8 +139,18 @@ export default function TasksScreen() {
           <Text style={styles.conta}>10 + 5</Text>
           <Text style={styles.texto}>Resolva no seu tempo e me mande o resultado.</Text>
         </MsgBot>
-    
-      
+
+        {/* 4. Usuário responde */}
+        <MsgUsuario>
+          <Text style={styles.resposta}>15</Text>
+        </MsgUsuario>
+
+        {/* 5. Gato comemora */}
+        <MsgBot>
+          <Text style={styles.texto}>Você acertou, Parabéns! Você é incrível em matemática!</Text>
+        </MsgBot>
+
+
       </ScrollView>
     </View>
   );
@@ -159,7 +169,7 @@ const styles = StyleSheet.create({
     gap: 28,
   },
 
-   title: {
+  title: {
     fontSize: 36,
     fontWeight: '900',
     color: '#000',
@@ -276,7 +286,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginVertical: 14,
   },
-  
+
   resposta: {
     fontSize: 24,
     fontWeight: '800',
@@ -295,5 +305,5 @@ const styles = StyleSheet.create({
     marginTop: 16,
   },
 
-  
+
 });
