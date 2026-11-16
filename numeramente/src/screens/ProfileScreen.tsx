@@ -137,6 +137,34 @@ export default function ProfileScreen() {
             backgroundColor: BG,
           }}
         />
+
+
+        {/* avatar */}
+        <View style={[styles.avatarWrap, { top: insets.top + 24 + W * 0.17 }]}>
+          <View
+            style={{
+              width: avatar,
+              height: avatar,
+              borderRadius: avatar * 0.38,
+              backgroundColor: '#3a56d4',
+              paddingBottom: 10,
+            }}
+          >
+            <View style={[styles.avatarFace, { borderRadius: avatar * 0.38, borderWidth: 4, borderColor: BLUE }]}>
+              <MaterialCommunityIcons name="account" size={avatar * 0.78} color={BLUE} />
+            </View>
+          </View>
+          <MaterialCommunityIcons
+            name="pencil"
+            size={34}
+            color={INK}
+            style={styles.lapis}
+          />
+        </View>
+
+        <Text style={[styles.nome, { top: insets.top + 24 + W * 0.17 + avatar + 24 }]}>
+          {nome}
+        </Text>
         </View>
     </ScrollView>
 
@@ -151,4 +179,38 @@ const styles = StyleSheet.create({
     backgroundColor: BG,
   },
 
+  /* topo */
+  topoLinha: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 24,
+  },
+
+   avatarWrap: {
+    position: 'absolute',
+    alignSelf: 'center',
+  },
+
+  avatarFace: {
+    flex: 1,
+    backgroundColor: '#fff',
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+    overflow: 'hidden',
+  },
+
+  lapis: {
+    position: 'absolute',
+    right: -2,
+    top: -10,
+  },
+
+  nome: {
+    position: 'absolute',
+    alignSelf: 'center',
+    fontSize: 34,
+    fontWeight: '900',
+    color: '#000',
+  },
 });
