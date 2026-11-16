@@ -122,3 +122,59 @@ export default function OperationsScreen({ navigation }: Props) {
     </View>
   );
 }
+
+/* ---------- Estilos ---------- */
+const styles = StyleSheet.create({
+  root: {
+    flex: 1,
+    backgroundColor: BG,
+  },
+  title: {
+    paddingHorizontal: 24,
+    marginBottom: 28,
+    fontSize: 30,
+    lineHeight: 38,
+    fontWeight: '800',
+    color: INK,
+  },
+  titleAccent: {
+    color: BLUE,
+  },
+  panel: {
+    flex: 1,
+    backgroundColor: PANEL,
+    borderTopLeftRadius: 64,
+    borderTopRightRadius: 64,
+  },
+  panelContent: {
+    alignItems: 'center',
+    paddingTop: 28,
+    paddingBottom: 40,
+    gap: 12,
+  },
+  card: {
+    width: '62%',
+    borderRadius: 18,
+    paddingBottom: 12, // espessura da base 3D
+  },
+  cardPressed: {
+    transform: [{ translateY: 4 }],
+    paddingBottom: 8,
+  },
+  cardFace: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 2,
+    borderRadius: 18,
+  },
+  iconArea: {
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  cardLabel: {
+    marginTop: 4,
+    fontSize: 22,
+    fontWeight: '800',
+    color: '#fff',
+  },
+});
