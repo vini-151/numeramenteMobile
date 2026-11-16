@@ -73,14 +73,82 @@ function Estrela({ tamanho = 22 }: { tamanho?: number }) {
   );
 }
 
+/* ---------- Tela ---------- */
 export default function ProfileScreen() {
   const { user, signOut } = useAuth();
+  const insets = useSafeAreaInsets();
+  const { width: W } = useWindowDimensions();
+
+  const nome = user?.nome ?? 'Lulu';
+  const avatar = W * 0.3;
+  const alturaTopo = W * 0.92;
+
+  function confirmarExclusao() {
+    Alert.alert(
+      'Excluir conta',
+      'Tem certeza? Essa ação não pode ser desfeita.',
+      [
+        { text: 'Cancelar', style: 'cancel' },
+        {
+          text: 'Excluir',
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              if (user) await api.delete(`/usuarios/${user.id}`);
+            } catch {
+              // se a API falhar, ainda assim encerra a sessão local
+            }
+            await signOut();
+          },
+        },
+      ]
+    );
+  }
+
 
   return (
-    <View style={{ flex: 1, padding: 24, gap: 8 }}>
-      <Text style={{ fontSize: 20 }}>{user?.nome}</Text>
-      <Text>{user?.email}</Text>
-      <Button title="Sair" onPress={signOut} />
-    </View>
+    <ScrollView
+      style={styles.root}
+      contentContainerStyle={{ paddingBottom: 24 }}
+      showsVerticalScrollIndicator={false}
+    >
+      {/* ---------- Topo: arco azul + avatar + nome ---------- */}
+      <View style={{ height: alturaTopo, overflow: 'hidden' }}>
+        {/* arco: círculo azul com círculo claro por cima */}
+        <View
+          style={{
+            position: 'absolute',
+            left: -0.4 * W,
+            top: 0.31 * W,
+            width: 1.8 * W,
+            height: 1.8 * W,
+            borderRadius: 0.9 * W,
+            backgroundColor: BLUE,
+          }}
+        />
+        <View
+          style={{
+            position: 'absolute',
+            left: -0.18 * W,
+            top: 0.53 * W,
+            width: 1.36 * W,
+            height: 1.36 * W,
+            borderRadius: 0.68 * W,
+            backgroundColor: BG,
+          }}
+        />
+        </View>
+    </ScrollView>
+
   );
 }
+
+
+/* ---------- Estilos ---------- */
+const styles = StyleSheet.create({
+  root: {
+    flex: 1,
+    backgroundColor: BG,
+  },
+
+});
