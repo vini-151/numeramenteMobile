@@ -1,18 +1,16 @@
-import React, { useLayoutEffect } from 'react';
-import {
-  View,
-  Text,
-  Image,
-  Pressable,
-  ScrollView,
-  ImageSourcePropType,
-  useWindowDimensions,
-  StyleSheet,
+import React from 'react';
+import { View, Text, Image, Pressable, ScrollView, ImageSourcePropType, useWindowDimensions, StyleSheet,
 } from 'react-native';
+import { CompositeScreenProps } from '@react-navigation/native';
+import { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { RootStackParamList } from '../navigation/types';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { RootStackParamList, TabParamList, OperationId } from '../navigation/types';
 
-type Props = NativeStackScreenProps<RootStackParamList, 'Operations'>;
+type Props = CompositeScreenProps<
+  BottomTabScreenProps<TabParamList, 'Operations'>,
+  NativeStackScreenProps<RootStackParamList>
+>;
 
 /* ---------- Cores ---------- */
 const INK = '#0f1b2d';
@@ -20,11 +18,8 @@ const BLUE = '#3d5afe';
 const BG = '#eaf3ff';
 const PANEL = '#c9d8fb';
 
-/* ---------- Imagens da designer ---------- */
-const PERFIL = require('../../assets/images/perfil.png'); // 88x102
-
 type Operacao = {
-  id: string;
+  id: OperationId;
   label: string;
   icone: ImageSourcePropType;
   iconeAspect: number; // largura / altura da imagem original
@@ -35,7 +30,7 @@ type Operacao = {
 
 const OPERACOES: Operacao[] = [
   {
-    id: '1',
+    id: 'adicao',
     label: 'Adição',
     icone: require('../../assets/images/icone-adicao.png'), // 110x104
     iconeAspect: 110 / 104,
@@ -44,7 +39,7 @@ const OPERACOES: Operacao[] = [
     borda: '#2f6e3e',
   },
   {
-    id: '2',
+    id: 'subtracao',
     label: 'Subtração',
     icone: require('../../assets/images/icone-subtracao.png'), // 155x55
     iconeAspect: 155 / 55,
@@ -53,7 +48,7 @@ const OPERACOES: Operacao[] = [
     borda: '#a22e4a',
   },
   {
-    id: '3',
+    id: 'multiplicacao',
     label: 'Multiplicação',
     icone: require('../../assets/images/icone-multiplicacao.png'), // 107x108
     iconeAspect: 107 / 108,
@@ -62,7 +57,7 @@ const OPERACOES: Operacao[] = [
     borda: '#4f1a7a',
   },
   {
-    id: '4',
+    id: 'divisao',
     label: 'Divisão',
     icone: require('../../assets/images/icone-divisao.png'), // 120x105
     iconeAspect: 120 / 105,
@@ -75,33 +70,11 @@ const OPERACOES: Operacao[] = [
 /* ---------- Tela ---------- */
 export default function OperationsScreen({ navigation }: Props) {
   const { width: W } = useWindowDimensions();
-
-  // Botão de perfil no cabeçalho
-  useLayoutEffect(() => {
-    navigation.setOptions({
-      title: '',
-      headerShadowVisible: false,
-      headerStyle: { backgroundColor: BG },
-      headerRight: () => (
-        <Pressable
-          onPress={() => navigation.navigate('Profile')}
-          accessibilityRole="button"
-          accessibilityLabel="Perfil"
-          hitSlop={8}
-        >
-          <Image
-            source={PERFIL}
-            style={{ width: W * 0.11, height: W * 0.11 * (102 / 88) }}
-            resizeMode="contain"
-          />
-        </Pressable>
-      ),
-    });
-  }, [navigation, W]);
+  const insets = useSafeAreaInsets();
 
   return (
     <View style={styles.root}>
-      <Text style={styles.title}>
+      <Text style={[styles.title, { paddingTop: insets.top + 28 }]}>
         Escolha uma{'\n'}
         <Text style={styles.titleAccent}>operação matemática</Text>
         {'\n'}para praticar!
@@ -124,12 +97,23 @@ export default function OperationsScreen({ navigation }: Props) {
               pressed && styles.cardPressed,
             ]}
           >
-            <View style={[styles.cardFace, { backgroundColor: op.face, borderColor: op.borda }]}>
-              <Image
-                source={op.icone}
-                style={{ width: W * op.iconeLargura, aspectRatio: op.iconeAspect }}
-                resizeMode="contain"
-              />
+            <View
+              style={[
+                styles.cardFace,
+                { height: W * 0.25, backgroundColor: op.face, borderColor: op.borda },
+              ]}
+            >
+              {/* área fixa para o ícone: todos os rótulos ficam alinhados */}
+              <View style={[styles.iconArea, { height: W * 0.14 }]}>
+                <Image
+                  source={op.icone}
+                  style={{
+                    width: W * op.iconeLargura,
+                    height: (W * op.iconeLargura) / op.iconeAspect,
+                  }}
+                  resizeMode="contain"
+                />
+              </View>
               <Text style={styles.cardLabel}>{op.label}</Text>
             </View>
           </Pressable>
@@ -139,7 +123,7 @@ export default function OperationsScreen({ navigation }: Props) {
   );
 }
 
-/* ---------- Estilos (mesmo arquivo) ---------- */
+/* ---------- Estilos ---------- */
 const styles = StyleSheet.create({
   root: {
     flex: 1,
@@ -147,7 +131,6 @@ const styles = StyleSheet.create({
   },
   title: {
     paddingHorizontal: 24,
-    paddingTop: 8,
     marginBottom: 28,
     fontSize: 30,
     lineHeight: 38,
@@ -181,9 +164,12 @@ const styles = StyleSheet.create({
   cardFace: {
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 14,
     borderWidth: 2,
     borderRadius: 18,
+  },
+  iconArea: {
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   cardLabel: {
     marginTop: 4,
