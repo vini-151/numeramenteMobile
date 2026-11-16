@@ -33,6 +33,46 @@ const MES = 0; // janeiro
 const DIAS_SEQUENCIA = [1, 2, 3, 4, 5, 6]; // dias com estrela
 const SEMANA = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sab'];
 
+type Celula = { dia: number; doMes: boolean };
+
+// Monta 6 semanas (42 células), completando com dias do mês anterior e do seguinte
+function montarCalendario(): Celula[] {
+  const primeiroDiaSemana = new Date(ANO, MES, 1).getDay();
+  const diasNoMes = new Date(ANO, MES + 1, 0).getDate();
+  const diasMesAnterior = new Date(ANO, MES, 0).getDate();
+
+  const celulas: Celula[] = [];
+  for (let i = primeiroDiaSemana - 1; i >= 0; i--) {
+    celulas.push({ dia: diasMesAnterior - i, doMes: false });
+  }
+  for (let d = 1; d <= diasNoMes; d++) celulas.push({ dia: d, doMes: true });
+  let proximo = 1;
+  while (celulas.length < 42) celulas.push({ dia: proximo++, doMes: false });
+  return celulas;
+}
+
+const CELULAS = montarCalendario();
+
+/* ---------- Estrela com contorno ---------- */
+function Estrela({ tamanho = 22 }: { tamanho?: number }) {
+  return (
+    <View style={{ width: tamanho, height: tamanho }}>
+      <MaterialCommunityIcons
+        name="star-four-points"
+        size={tamanho}
+        color={INK}
+        style={StyleSheet.absoluteFill}
+      />
+      <MaterialCommunityIcons
+        name="star-four-points"
+        size={tamanho - 6}
+        color={LARANJA}
+        style={{ position: 'absolute', left: 3, top: 3 }}
+      />
+    </View>
+  );
+}
+
 export default function ProfileScreen() {
   const { user, signOut } = useAuth();
 
