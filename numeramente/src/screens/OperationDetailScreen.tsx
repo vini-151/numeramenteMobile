@@ -1,15 +1,5 @@
 import React, { useState } from 'react';
-import {
-  View,
-  Text,
-  TextInput,
-  Image,
-  Pressable,
-  ScrollView,
-  KeyboardAvoidingView,
-  Platform,
-  useWindowDimensions,
-  StyleSheet,
+import { View, Text, TextInput, Image, Pressable, ScrollView, KeyboardAvoidingView, Platform, useWindowDimensions, StyleSheet,
 } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -63,6 +53,32 @@ function Novelos({ quantidade, tamanho }: { quantidade: number; tamanho: number 
           ))}
         </View>
       ))}
+    </View>
+  );
+}
+
+/* ---------- Card: cabeçalho colorido com o número + corpo branco com novelos ---------- */
+function CardNumero({
+  face,
+  borda,
+  quantidade,
+  tamanho,
+  children,
+}: {
+  face: string;
+  borda: string;
+  quantidade: number;
+  tamanho: number;
+  children: React.ReactNode; // conteúdo do cabeçalho (input ou número)
+}) {
+  return (
+    <View style={styles.card}>
+      <View style={[styles.cardHeader, { backgroundColor: face, borderColor: borda }]}>
+        {children}
+      </View>
+      <View style={[styles.cardBody, { borderColor: borda }]}>
+        <Novelos quantidade={quantidade} tamanho={tamanho} />
+      </View>
     </View>
   );
 }
