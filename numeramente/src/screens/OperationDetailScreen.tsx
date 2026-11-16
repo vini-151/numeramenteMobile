@@ -229,4 +229,131 @@ export default function OperationDetailScreen({ route, navigation }: Props) {
       </View>
     </KeyboardAvoidingView>
   );
-}
+}/* ---------- Estilos ---------- */
+const styles = StyleSheet.create({
+  root: {
+    flex: 1,
+    backgroundColor: BG,
+  },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 16,
+    paddingHorizontal: 20,
+    paddingBottom: 16,
+  },
+  back: {
+    fontSize: 34,
+    fontWeight: '700',
+    color: BLUE,
+  },
+  title: {
+    fontSize: 36,
+    fontWeight: '800',
+  },
+  panel: {
+    flex: 1,
+    backgroundColor: PANEL_BLUE,
+    borderTopLeftRadius: 40,
+    borderTopRightRadius: 40,
+    padding: 12,
+    paddingBottom: 0,
+  },
+  inner: {
+    flex: 1,
+    backgroundColor: BG,
+    borderTopLeftRadius: 30,
+    borderTopRightRadius: 30,
+  },
+  innerContent: {
+    paddingHorizontal: 24,
+    paddingTop: 24,
+    paddingBottom: 40,
+    alignItems: 'center',
+  },
+  instrucao: {
+    alignSelf: 'flex-start',
+    fontSize: 16,
+    fontWeight: '800',
+    color: INK,
+    marginBottom: 12,
+  },
+
+  /* card */
+  card: {
+    width: '100%',
+  },
+  cardHeader: {
+    borderWidth: 2,
+    borderTopLeftRadius: 16,
+    borderTopRightRadius: 16,
+    paddingTop: 2,
+    paddingBottom: 18,
+    alignItems: 'center',
+  },
+  cardBody: {
+    backgroundColor: '#fff',
+    borderWidth: 2,
+    borderRadius: 16,
+    marginTop: -14,
+    padding: 12,
+    minHeight: 64,
+  },
+  numero: {
+    minWidth: 60,
+    textAlign: 'center',
+    fontSize: 26,
+    fontWeight: '800',
+    color: '#000',
+    paddingVertical: 2,
+  },
+
+  simbolo: {
+    fontSize: 56,
+    lineHeight: 60,
+    fontWeight: '900',
+    marginVertical: 4,
+    textShadowOffset: { width: 2, height: 3 },
+    textShadowRadius: 0,
+  },
+
+  erro: {
+    color: '#c62828',
+    fontSize: 14,
+    fontWeight: '600',
+    textAlign: 'center',
+    marginTop: 12,
+  },
+
+  /* botão 3D */
+  botaoBase: {
+    marginVertical: 20,
+    backgroundColor: '#0f22a8',
+    borderRadius: 18,
+    paddingBottom: 6,
+  },
+  botaoBasePressed: {
+    transform: [{ translateY: 3 }],
+    paddingBottom: 3,
+  },
+  botaoFace: {
+    backgroundColor: PANEL_BLUE,
+    borderWidth: 2,
+    borderColor: '#0f22a8',
+    borderRadius: 18,
+    paddingVertical: 14,
+    paddingHorizontal: 56,
+  },
+  botaoTexto: {
+    color: '#fff',
+    fontSize: 18,
+    fontWeight: '800',
+  },
+
+  resto: {
+    marginTop: 12,
+    fontSize: 18,
+    fontWeight: '800',
+    color: INK,
+  },
+});
