@@ -16,7 +16,7 @@ Notifications.setNotificationHandler({
 
 //------Função para garantir permissão------
 async function garantirPermissao(): Promise<boolean>{
-    const atual = await Notifications.getPermissionsAsync;
+    const atual = await Notifications.getPermissionsAsync();
     if (atual.granted) return true;
     if (!atual.canAskAgain) return false;
 
@@ -35,7 +35,7 @@ export async function agendarLembreteDiario(hora = 8, minuto = 0) {
     if (!(await garantirPermissao())) return;
 
     //Cancela antes para nunca duplicar o agendamento
-    await Notifications.cancelAllScheduledNotificationsAsync(LEMBRETE_ID);
+    await Notifications.cancelScheduledNotificationAsync(LEMBRETE_ID);
 
     await Notifications.scheduleNotificationAsync({
         identifier: LEMBRETE_ID,
