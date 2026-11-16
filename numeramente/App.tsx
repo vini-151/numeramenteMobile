@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { ActivityIndicator, View } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
@@ -13,6 +13,11 @@ import OperationsScreen from './src/screens/OperationsScreen';
 import OperationDetailScreen from './src/screens/OperationDetailScreen';
 import TasksScreen from './src/screens/TasksScreen';
 import ProfileScreen from './src/screens/ProfileScreen';
+
+import {
+  agendarLembreteDiario,
+  cancelarLembreteDiario,
+} from './src/services/notifications';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 const Tab = createBottomTabNavigator<TabParamList>();
@@ -32,6 +37,16 @@ function MainTabs() {
 
 function Routes() {
   const { user, loading } = useAuth();
+
+  useEffect(() =>{
+    if (loading) return; 
+
+    if (user) {
+      agendarLembreteDiario(8,0).catch(console.log);
+    }else {
+      cancelarLembreteDiario().catch(console.log)
+    }
+  }, [user, loading]);
 
   if (loading) {
     return (
