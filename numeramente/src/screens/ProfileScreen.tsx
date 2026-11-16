@@ -119,7 +119,7 @@ export default function ProfileScreen() {
           style={{
             position: 'absolute',
             left: -0.4 * W,
-            top: 0.31 * W,
+            top: 0.34 * W,
             width: 1.8 * W,
             height: 1.8 * W,
             borderRadius: 0.9 * W,
@@ -138,6 +138,13 @@ export default function ProfileScreen() {
           }}
         />
 
+        {/* título + excluir conta */}
+        <View style={[styles.topoLinha, { paddingTop: insets.top + 24 }]}>
+          <Text style={styles.titulo}>Perfil</Text>
+          <Pressable onPress={confirmarExclusao} hitSlop={8} accessibilityRole="button">
+            <Text style={styles.excluir}>Excluir conta</Text>
+          </Pressable>
+        </View>
 
         {/* avatar */}
         <View style={[styles.avatarWrap, { top: insets.top + 24 + W * 0.17 }]}>
@@ -166,6 +173,56 @@ export default function ProfileScreen() {
           {nome}
         </Text>
         </View>
+
+              {/* ---------- Sequência ---------- */}
+      <View style={styles.sequenciaLinha}>
+        <Text style={styles.sequenciaTitulo}>Sua sequência</Text>
+        <View style={styles.badgeBase}>
+          <View style={styles.badgeFace}>
+            <MaterialCommunityIcons name="star-four-points-outline" size={18} color={INK} />
+            <Text style={styles.badgeTexto}>7 Dias</Text>
+          </View>
+        </View>
+      </View>
+
+      {/* ---------- Calendário ---------- */}
+      <View style={styles.panel}>
+        <View style={styles.mesLinha}>
+          <Text style={styles.mesTitulo}>Janeiro 2026</Text>
+          <View style={styles.setas}>
+            <MaterialCommunityIcons name="chevron-left" size={30} color={INK} />
+            <MaterialCommunityIcons name="chevron-right" size={30} color={INK} />
+          </View>
+        </View>
+
+        <View style={styles.semanaLinha}>
+          {SEMANA.map((d) => (
+            <Text key={d} style={styles.semanaDia}>
+              {d}
+            </Text>
+          ))}
+        </View>
+        <View style={styles.divisor} />
+
+        <View style={styles.grade}>
+          {CELULAS.map((c, i) => {
+            const marcado = c.doMes && DIAS_SEQUENCIA.includes(c.dia);
+            return (
+              <View key={i} style={styles.celula}>
+                {marcado && <View style={styles.circulo} />}
+                <Text style={[styles.diaNumero, !c.doMes && styles.diaCinza]}>
+                  {c.dia < 10 && c.doMes ? `0${c.dia}`.replace(/^0(?=[2-9])/, '') : c.dia}
+                </Text>
+                {marcado && (
+                  <View style={styles.estrela}>
+                    <Estrela />
+                  </View>
+                )}
+              </View>
+            );
+          })}
+        </View>
+      </View>
     </ScrollView>
 
   );
@@ -192,6 +249,18 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
   },
 
+  titulo: {
+    fontSize: 36,
+    fontWeight: '900',
+    color: '#000',
+  },
+
+  excluir: {
+    fontSize: 13,
+    color: VERMELHO,
+    textDecorationLine: 'underline',
+  },
+
   avatarFace: {
     flex: 1,
     backgroundColor: '#fff',
@@ -212,5 +281,125 @@ const styles = StyleSheet.create({
     fontSize: 34,
     fontWeight: '900',
     color: '#000',
+  },
+
+
+  /* sequência */
+  sequenciaLinha: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 24,
+    marginBottom: 14,
+  },
+  sequenciaTitulo: {
+    fontSize: 20,
+    fontWeight: '900',
+    color: '#000',
+  },
+  badgeBase: {
+    backgroundColor: LARANJA_ESCURO,
+    borderRadius: 14,
+    paddingBottom: 3,
+  },
+  badgeFace: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    backgroundColor: LARANJA,
+    borderWidth: 1.5,
+    borderColor: LARANJA_ESCURO,
+    borderRadius: 14,
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+  },
+  badgeTexto: {
+    fontSize: 15,
+    fontWeight: '900',
+    color: INK,
+  },
+
+  /* painel do calendário */
+  panel: {
+    backgroundColor: PANEL,
+    borderWidth: 2,
+    borderColor: PANEL_BORDA,
+    borderTopLeftRadius: 48,
+    borderTopRightRadius: 48,
+    paddingHorizontal: 20,
+    paddingTop: 36,
+    paddingBottom: 24,
+  },
+  
+  mesLinha: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 18,
+  },
+
+  mesTitulo: {
+    fontSize: 20,
+    fontWeight: '900',
+    color: '#000',
+  },
+
+  setas: {
+    flexDirection: 'row',
+    gap: 10,
+  },
+
+  semanaLinha: {
+    flexDirection: 'row',
+  },
+
+  semanaDia: {
+    flex: 1,
+    textAlign: 'center',
+    fontSize: 15,
+    color: INK,
+  },
+
+  divisor: {
+    height: 2,
+    backgroundColor: '#aebffa',
+    marginTop: 10,
+    marginBottom: 8,
+  },
+
+  grade: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+  },
+
+  celula: {
+    width: `${100 / 7}%`,
+    height: 58,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+
+  circulo: {
+    position: 'absolute',
+    width: 46,
+    height: 46,
+    borderRadius: 23,
+    backgroundColor: MARCADO,
+  },
+
+  diaNumero: {
+    fontSize: 18,
+    fontWeight: '900',
+    color: '#000',
+  },
+
+  diaCinza: {
+    color: CINZA,
+  },
+
+  estrela: {
+    position: 'absolute',
+    top: 2,
+    right: 0,
   },
 });
