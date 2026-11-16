@@ -113,13 +113,32 @@ export default function TasksScreen() {
         contentContainerStyle={[styles.content, { paddingTop: insets.top + 24 }]}
         showsVerticalScrollIndicator={false}
       >
+        <Text style={styles.title}>Tarefas</Text>
 
+
+        {/* 1. Gato oferece as operações */}
+        <MsgBot>
+          <Text style={styles.texto}>
+            Vamos praticar mais? Selecione a operação matemática que deseja praticar:
+          </Text>
+          <View style={styles.grade}>
+            {OPS.map((op) => (
+              <OpMini key={op.label} op={op} largura="48%" />
+            ))}
+          </View>
+        </MsgBot>
 
         {/* 2. Usuário escolhe Adição */}
         <MsgUsuario>
           <OpMini op={OPS[0]} largura={W * 0.3} />
         </MsgUsuario>
 
+        {/* 3. Gato propõe a conta */}
+        <MsgBot>
+          <Text style={styles.texto}>Legal! Vamos começar. Resolva a operação:</Text>
+          <Text style={styles.conta}>10 + 5</Text>
+          <Text style={styles.texto}>Resolva no seu tempo e me mande o resultado.</Text>
+        </MsgBot>
     
       
       </ScrollView>
@@ -138,6 +157,14 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingBottom: 32,
     gap: 28,
+  },
+
+   title: {
+    fontSize: 36,
+    fontWeight: '900',
+    color: '#000',
+    marginLeft: 8,
+    marginBottom: 8,
   },
 
   /* botão mini 3D */
@@ -234,6 +261,39 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
 
+  /* textos */
+  texto: {
+    fontSize: 17,
+    lineHeight: 23,
+    fontWeight: '800',
+    color: INK,
+  },
+
+  conta: {
+    fontSize: 24,
+    fontWeight: '800',
+    color: VERDE_TEXTO,
+    textAlign: 'center',
+    marginVertical: 14,
+  },
+  
+  resposta: {
+    fontSize: 24,
+    fontWeight: '800',
+    color: VERDE_TEXTO,
+    textAlign: 'center',
+    paddingHorizontal: 36,
+    paddingVertical: 6,
+  },
+
+  /* grade de operações */
+  grade: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+    rowGap: 10,
+    marginTop: 16,
+  },
 
   
 });
