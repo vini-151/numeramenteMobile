@@ -47,7 +47,7 @@ export async function agendarLembreteDiario(hora = 8, minuto = 0) {
             type: Notifications.SchedulableTriggerInputTypes.DAILY,
             hour: hora,
             minute: minuto,
-            channelId: CANAL_ID, //usa só se for android
+            channelId: CANAL_ID, // usado só no Android
         },
     });
 }
