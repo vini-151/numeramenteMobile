@@ -12,10 +12,17 @@ export type User = { id: number; nome: string; email: string };
 
 type AuthContextData = {
   user: User | null;
-  loading: boolean; // true enquanto restaura o usuário salvo ao abrir o app
+  loading: boolean;
   signIn: (nome: string, email: string) => Promise<void>;
   signOut: () => Promise<void>;
+  atualizarNome: (nome: string) => Promise<void>;
 };
+
+
+
+
+
+
 
 const USER_KEY = 'auth_user';
 
@@ -51,10 +58,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(null);
   }
 
+  async function atualizarNome(nome: string) {
+    if (!user) return;
+    const { data } = await api.patch<User>(`/usuarios/${user.id}`, { nome });
+    await SecureStore.setItemAsync(USER_KEY, JSON.stringify(data));
+    setUser(data);
+  }
+
+
+
   return (
-    <AuthContext.Provider value={{ user, loading, signIn, signOut }}>
+    <AuthContext.Provider value={{ user, loading, signIn, signOut, atualizarNome  }}>
       {children}
     </AuthContext.Provider>
+
   );
 }
 
