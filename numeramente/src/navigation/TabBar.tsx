@@ -11,7 +11,7 @@ type IconName = React.ComponentProps<typeof MaterialCommunityIcons>['name'];
 
 
 const TABS: Record<string, { label: string; icon: IconName }> = {
-  Operations: { label: 'Início', icon: 'home' },
+  Operations: { label: 'Calculadora', icon: 'calculator-variant' },
   Tasks: { label: 'Tarefas', icon: 'clipboard-text' },
   Profile: { label: 'Perfil', icon: 'account' },
 };
