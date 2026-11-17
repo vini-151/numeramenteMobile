@@ -1,48 +1,92 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+import { ActivityIndicator, AppState, View } from 'react-native';
+import { fazerCheckin } from './src/services/streak';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+
 import { AuthProvider, useAuth } from './src/contexts/AuthContext';
-import { RootStackParamList } from './src/navigation/types';
+import { RootStackParamList, TabParamList } from './src/navigation/types';
+import TabBar from './src/navigation/TabBar';
 
 import LoginScreen from './src/screens/LoginScreen';
 import OperationsScreen from './src/screens/OperationsScreen';
 import OperationDetailScreen from './src/screens/OperationDetailScreen';
+import TasksScreen from './src/screens/TasksScreen';
 import ProfileScreen from './src/screens/ProfileScreen';
 
+
+
+import {
+  agendarLembreteDiario,
+  cancelarLembreteDiario,
+} from './src/services/notifications';
+
 const Stack = createNativeStackNavigator<RootStackParamList>();
+const Tab = createBottomTabNavigator<TabParamList>();
+
+function MainTabs() {
+  return (
+    <Tab.Navigator
+      tabBar={(props) => <TabBar {...props} />}
+      screenOptions={{ headerShown: false }}
+    >
+      <Tab.Screen name="Operations" component={OperationsScreen} />
+      <Tab.Screen name="Tasks" component={TasksScreen} />
+      <Tab.Screen name="Profile" component={ProfileScreen} />
+    </Tab.Navigator>
+  );
+}
 
 function Routes() {
-  const { user } = useAuth();
+  const { user, loading, signOut } = useAuth();
+
+  // Check-in diário: ao entrar e sempre que o app volta para o primeiro plano
+  useEffect(() => {
+    if (!user) return;
+
+    const registrar = () =>
+      fazerCheckin(user.id).catch((e) => {
+        // usuário apagado no backend: encerra a sessão local
+        if (e?.response?.status === 404) signOut();
+        else console.log('Erro no check-in:', e?.message);
+      });
+
+    registrar();
+    const sub = AppState.addEventListener('change', (estado) => {
+      if (estado === 'active') registrar();
+    });
+    return () => sub.remove();
+  }, [user?.id]);
+
+  useEffect(() =>{
+    if (loading) return; 
+
+    if (user) {
+      agendarLembreteDiario(8,0).catch(console.log);
+    }else {
+      cancelarLembreteDiario().catch(console.log)
+    }
+  }, [user, loading]);
+
+  if (loading) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <ActivityIndicator size="large" />
+      </View>
+    );
+  }
 
   return (
     <NavigationContainer>
-      <Stack.Navigator>
+      <Stack.Navigator screenOptions={{ headerShown: false }}>
         {user ? (
-          // Telas disponíveis apenas com o usuário logado
           <>
-            <Stack.Screen
-              name="Operations"
-              component={OperationsScreen}
-              options={{ title: 'Operações' }}
-            />
-            <Stack.Screen
-              name="OperationDetail"
-              component={OperationDetailScreen}
-              options={{ title: 'Operação' }}
-            />
-            <Stack.Screen
-              name="Profile"
-              component={ProfileScreen}
-              options={{ title: 'Perfil' }}
-            />
+            <Stack.Screen name="Main" component={MainTabs} />
+            <Stack.Screen name="OperationDetail" component={OperationDetailScreen} />
           </>
         ) : (
-          // Tela exibida quando não está logado (primeira ao abrir o app)
-          <Stack.Screen
-            name="Login"
-            component={LoginScreen}
-            options={{ headerShown: false }}
-          />
+          <Stack.Screen name="Login" component={LoginScreen} />
         )}
       </Stack.Navigator>
     </NavigationContainer>
