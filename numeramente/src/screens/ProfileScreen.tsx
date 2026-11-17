@@ -1,4 +1,7 @@
-import React from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
+import { useFocusEffect } from '@react-navigation/native';
+import { buscarStreak, StreakInfo } from '../services/streak';
+import { dataLocal } from '../utils/data';
 import {
   View,
   Text,
@@ -27,31 +30,25 @@ const LARANJA = '#f5b04c';
 const LARANJA_ESCURO = '#d98a2b';
 const VERMELHO = '#c62828';
 
-/* ---------- Mock: Janeiro de 2026 ---------- */
-const ANO = 2026;
-const MES = 0; // janeiro
-const DIAS_SEQUENCIA = [1, 2, 3, 4, 5, 6]; // dias com estrela
+const MESES = [
+  'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
+  'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro',
+];
+
 const SEMANA = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sab'];
 
-type Celula = { dia: number; doMes: boolean };
+type Celula = { dia: number; doMes: boolean; chave: string };
 
-// Monta 6 semanas (42 células), completando com dias do mês anterior e do seguinte
-function montarCalendario(): Celula[] {
-  const primeiroDiaSemana = new Date(ANO, MES, 1).getDay();
-  const diasNoMes = new Date(ANO, MES + 1, 0).getDate();
-  const diasMesAnterior = new Date(ANO, MES, 0).getDate();
-
+// 6 semanas (42 células) começando no domingo da semana do dia 1
+function montarCalendario(ano: number, mes: number): Celula[] {
+  const primeiroDiaSemana = new Date(ano, mes, 1).getDay();
   const celulas: Celula[] = [];
-  for (let i = primeiroDiaSemana - 1; i >= 0; i--) {
-    celulas.push({ dia: diasMesAnterior - i, doMes: false });
+  for (let i = 0; i < 42; i++) {
+    const d = new Date(ano, mes, 1 - primeiroDiaSemana + i);
+    celulas.push({ dia: d.getDate(), doMes: d.getMonth() === mes, chave: dataLocal(d) });
   }
-  for (let d = 1; d <= diasNoMes; d++) celulas.push({ dia: d, doMes: true });
-  let proximo = 1;
-  while (celulas.length < 42) celulas.push({ dia: proximo++, doMes: false });
   return celulas;
 }
-
-const CELULAS = montarCalendario();
 
 /* ---------- Estrela com contorno ---------- */
 function Estrela({ tamanho = 22 }: { tamanho?: number }) {
@@ -78,6 +75,29 @@ export default function ProfileScreen() {
   const { user, signOut } = useAuth();
   const insets = useSafeAreaInsets();
   const { width: W } = useWindowDimensions();
+
+  const hoje = new Date();
+  const [ano, setAno] = useState(hoje.getFullYear());
+  const [mes, setMes] = useState(hoje.getMonth());
+  const [streak, setStreak] = useState<StreakInfo | null>(null);
+
+  // Recarrega sempre que a aba de Perfil ganha foco
+  useFocusEffect(
+    useCallback(() => {
+      if (!user) return;
+      buscarStreak(user.id).then(setStreak).catch((e) => console.log('Erro streak:', e?.message));
+    }, [user?.id])
+  );
+
+  const celulas = useMemo(() => montarCalendario(ano, mes), [ano, mes]);
+  const diasMarcados = useMemo(() => new Set(streak?.dias ?? []), [streak]);
+  const totalDias = streak?.streak_atual ?? 0;
+
+  function mudarMes(delta: number) {
+    const d = new Date(ano, mes + delta, 1);
+    setAno(d.getFullYear());
+    setMes(d.getMonth());
+  }
 
   const nome = user?.nome ?? 'Lulu';
   const avatar = W * 0.3;
@@ -172,15 +192,17 @@ export default function ProfileScreen() {
         <Text style={[styles.nome, { top: insets.top + 24 + W * 0.17 + avatar + 24 }]}>
           {nome}
         </Text>
-        </View>
+      </View>
 
-              {/* ---------- Sequência ---------- */}
+      {/* ---------- Sequência ---------- */}
       <View style={styles.sequenciaLinha}>
         <Text style={styles.sequenciaTitulo}>Sua sequência</Text>
         <View style={styles.badgeBase}>
           <View style={styles.badgeFace}>
             <MaterialCommunityIcons name="star-four-points-outline" size={18} color={INK} />
-            <Text style={styles.badgeTexto}>7 Dias</Text>
+            <Text style={styles.badgeTexto}>
+              {totalDias} {totalDias === 1 ? 'Dia' : 'Dias'}
+            </Text>
           </View>
         </View>
       </View>
@@ -188,10 +210,16 @@ export default function ProfileScreen() {
       {/* ---------- Calendário ---------- */}
       <View style={styles.panel}>
         <View style={styles.mesLinha}>
-          <Text style={styles.mesTitulo}>Janeiro 2026</Text>
+          <Text style={styles.mesTitulo}>
+            {MESES[mes]} {ano}
+          </Text>
           <View style={styles.setas}>
-            <MaterialCommunityIcons name="chevron-left" size={30} color={INK} />
-            <MaterialCommunityIcons name="chevron-right" size={30} color={INK} />
+            <Pressable onPress={() => mudarMes(-1)} hitSlop={8} accessibilityLabel="Mês anterior">
+              <MaterialCommunityIcons name="chevron-left" size={30} color={INK} />
+            </Pressable>
+            <Pressable onPress={() => mudarMes(1)} hitSlop={8} accessibilityLabel="Próximo mês">
+              <MaterialCommunityIcons name="chevron-right" size={30} color={INK} />
+            </Pressable>
           </View>
         </View>
 
@@ -205,14 +233,12 @@ export default function ProfileScreen() {
         <View style={styles.divisor} />
 
         <View style={styles.grade}>
-          {CELULAS.map((c, i) => {
-            const marcado = c.doMes && DIAS_SEQUENCIA.includes(c.dia);
+          {celulas.map((c, i) => {
+            const marcado = diasMarcados.has(c.chave);
             return (
               <View key={i} style={styles.celula}>
                 {marcado && <View style={styles.circulo} />}
-                <Text style={[styles.diaNumero, !c.doMes && styles.diaCinza]}>
-                  {c.dia < 10 && c.doMes ? `0${c.dia}`.replace(/^0(?=[2-9])/, '') : c.dia}
-                </Text>
+                <Text style={[styles.diaNumero, !c.doMes && styles.diaCinza]}>{c.dia}</Text>
                 {marcado && (
                   <View style={styles.estrela}>
                     <Estrela />
@@ -224,7 +250,6 @@ export default function ProfileScreen() {
         </View>
       </View>
     </ScrollView>
-
   );
 }
 
@@ -244,7 +269,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
   },
 
-   avatarWrap: {
+  avatarWrap: {
     position: 'absolute',
     alignSelf: 'center',
   },
@@ -330,7 +355,7 @@ const styles = StyleSheet.create({
     paddingTop: 36,
     paddingBottom: 24,
   },
-  
+
   mesLinha: {
     flexDirection: 'row',
     justifyContent: 'space-between',

@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
-import { ActivityIndicator, View } from 'react-native';
+import { ActivityIndicator, AppState, View } from 'react-native';
+import { fazerCheckin } from './src/services/streak';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -13,6 +14,8 @@ import OperationsScreen from './src/screens/OperationsScreen';
 import OperationDetailScreen from './src/screens/OperationDetailScreen';
 import TasksScreen from './src/screens/TasksScreen';
 import ProfileScreen from './src/screens/ProfileScreen';
+
+
 
 import {
   agendarLembreteDiario,
@@ -36,7 +39,25 @@ function MainTabs() {
 }
 
 function Routes() {
-  const { user, loading } = useAuth();
+  const { user, loading, signOut } = useAuth();
+
+  // Check-in diário: ao entrar e sempre que o app volta para o primeiro plano
+  useEffect(() => {
+    if (!user) return;
+
+    const registrar = () =>
+      fazerCheckin(user.id).catch((e) => {
+        // usuário apagado no backend: encerra a sessão local
+        if (e?.response?.status === 404) signOut();
+        else console.log('Erro no check-in:', e?.message);
+      });
+
+    registrar();
+    const sub = AppState.addEventListener('change', (estado) => {
+      if (estado === 'active') registrar();
+    });
+    return () => sub.remove();
+  }, [user?.id]);
 
   useEffect(() =>{
     if (loading) return; 
